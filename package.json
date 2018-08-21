@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "mocha"
+    "start": "electron .",
+    "test": "node ./node_modules/mocha/bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -18,10 +18,9 @@
   },
   "homepage": "https://github.com/time4work/slack-msg-reviewer#readme",
   "dependencies": {
-    "electron": "^2.0.7",
-    "express": "^4.16.3",
-    "http": "0.0.0",
+    "chai": "^4.1.2",
     "mocha": "^5.2.0",
+    "electron": "^2.0.7",
     "slack": "^11.0.1",
     "socket.io": "^2.1.1"
   }
