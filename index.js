@@ -1,9 +1,11 @@
+const electron = require('electron');
+// const { ipcMain } = electron
+
 const _config = require('./config');
 const _module = require('./module');
+const { App, SlackMethods, customizer } = _module;
+const { app, sendDataToApp } = App;
 
-// const SlackMethods = require('./module/slack-methods');
-// const App = require('./module/app');
-const {App, SlackMethods} = _module;
 
 const methods = new SlackMethods(_config.slack.token, _config.slack.user);
 
@@ -16,6 +18,10 @@ methods.findUserId().then((userID) => {
 
 		methods.findChannelsMsgsByUserId(channelList, userID).then(msgList => {
 			console.log("msgList", msgList);
+			// customize data befor send
+			const data = customizer(msgList, userID);
+			// send msg data to app
+			sendDataToApp(data);
 
 		}).catch(e => {
 			console.log(e);

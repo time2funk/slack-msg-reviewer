@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Slack Messages</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script> -->
+</head>
+<body>
+	<nav>
+		<div class="nav-wrapper">
+			<a class="brand-logo center">Slack Messages Viewer</a>
+		</div>
+	</nav>		
+
+<ul>
+</ul>
+
+<script>
+	const electron = require('electron');
+	const { ipcRenderer } = electron;
+	const ul = document.querySelector("ul");
+	console.log(ul);
+
+	ipcRenderer.on("msgs:receive", (e, data) => {
+		ul.className = 'collection with-header';
+		console.log('bingo');
+		console.log(data);
+		for(let i=0 ; i < data.length; i++){
+			const li = document.createElement("li");
+			li.className = 'collection-item';
+			const itemText = document.createTextNode(data[i].text);
+			li.appendChild(itemText);
+			ul.appendChild(li);
+		}
+	})
+
+</script>
+</body>
+</html>
