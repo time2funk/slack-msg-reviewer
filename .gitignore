@@ -2,3 +2,5 @@ node_modules/
 Crashes/
 config.js
 
+.org.chromium.*/
+app.test.log

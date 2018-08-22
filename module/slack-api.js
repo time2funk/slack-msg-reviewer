@@ -17,6 +17,8 @@ module.exports = class SlackAPI {
             })
         });
     }
+
+    // channels
     channels() {
         return new Promise((resolve, reject) => {
             this.slack.channels.list({
@@ -44,6 +46,95 @@ module.exports = class SlackAPI {
             })
         });
     }
+
+    // team's user group
+    groups() {
+        return new Promise((resolve, reject) => {
+            this.slack.groups.list({
+                token: this.token
+            }, (err, res) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve(res)
+            })
+        })
+    }
+    groupHistory(channel, latest) {
+        return new Promise((resolve, reject) => {
+            const params = {
+                token: this.token,
+                channel,
+                latest
+            }
+            this.slack.groups.history(params, (err, res) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve(res)
+            })
+        })
+    }
+
+    // direct messages
+    im() {
+        return new Promise((resolve, reject) => {
+            this.slack.im.list({
+                token: this.token
+            }, (err, res) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve(res)
+            })
+        })
+    }
+    imHistory(channel, latest) {
+        return new Promise((resolve, reject) => {
+            const params = {
+                token: this.token,
+                channel,
+                latest
+            }
+            this.slack.im.history(params, (err, res) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve(res)
+            })
+        })
+    }
+
+    // multiparty direct message
+    mpim() {
+        return new Promise((resolve, reject) => {
+            this.slack.mpim.list({
+                token: this.token
+            }, (err, res) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve(res)
+            })
+        })
+    }
+    mpimHistory(channel, latest) {
+        return new Promise((resolve, reject) => {
+            const params = {
+                token: this.token,
+                channel,
+                latest
+            }
+            this.slack.mpim.history(params, (err, res) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve(res)
+            })
+        })
+    }
+
+    // connection test
     getSelfData() {
         return new Promise((resolve, reject) => {
             this.slack.auth.test({
