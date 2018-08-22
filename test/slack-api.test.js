@@ -2,11 +2,11 @@ const assert = require('chai').assert;
 //expect, assert, should()
 
 const config = require('../config');
+const slackApi = require('../module/slack-api');
+const slack = new slackApi(config.slack.token);
 
-describe('Slack API Testing', function(){
-	const slack = new slackApi(config.slack.token);
-	const slackApi = require('../module/slack-api');
-	
+describe('[Slack API Testing]', function(){
+
 	describe('connection', function(){
 		let result;
 
@@ -17,6 +17,7 @@ describe('Slack API Testing', function(){
 			assert.isOk(result.ok);
 		})
 	});
+
 	describe('fetch users testing', function(){
 		let result;
 
@@ -27,6 +28,7 @@ describe('Slack API Testing', function(){
 			assert.isOk(result.ok);
 		});
 	});
+
 	describe('fetch channels testing', function(){
 		let result;
 
@@ -40,6 +42,7 @@ describe('Slack API Testing', function(){
 			assert.isAtLeast(result.channels.length, 1);
 		});
 	});
+
 	describe('fetch channels history testing', async function(){
 		let channels;
 		let history;
