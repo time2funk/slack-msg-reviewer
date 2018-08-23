@@ -9,21 +9,20 @@ const _module = require('./module');
 const { SlackMethods } = _module;
 
 const methods = new SlackMethods(_config.slack.token, _config.slack.user);
-let showData = true;
 
 electron.crashReporter.start({
-  productName: 'slack-msg-viewer',
+  productName: '',
   companyName: '',
   submitURL: '',
   uploadToServer: false
 });
 
+let showData = true;
 let mainWindow;
 
 app.on('ready', ()=>{
 	mainWindow = new BrowserWindow({width:800, height: 600});
 
-	// mainWindow.loadURL('file://'+__dirname+'/view/index.html');
 	mainWindow.loadURL(
 		url.format({
 			pathname: path.join(__dirname, './view/index.html'),
@@ -41,32 +40,26 @@ app.on('ready', ()=>{
 
 });
 
-ipcMain.on('app-ready', (event, arg) => {
-    console.log('app front ready');
-    console.log(arg);
+app.on('window-all-closed', ()=>{
+	if (process.platform != 'darwin')
+		app.quit();
+});
 
-    // const data = [
-    // 	{text:"hjk"},
-    // 	{text:"hjk2"}
-    // ];
-    // event.sender.send('msgs:receive', data);
+
+ipcMain.on('msg-sources', (event, arg) => {
+    console.log('app-front is ready');
+
     if(showData){
-	    methods.setSources(['channel']);
-	    console.log(0);
+	    // methods.setSources(['channel', 'mpim', 'im', 'group']);
+	    console.log('slack-message sources:',arg);
+	    methods.setSources(arg);
 	    methods.getMsgs().then(data => {
-	    	console.log(1);
 	    	event.sender.send('msgs:receive', data);
 	    }).then(() => {
 	    	showData = false;
 	    }).catch(e => console.log(e));
     }
-
-  })
-// 	mainWindow.webContents.send('msgs:receive', [{text:"hjk"},{text:"hjk2"}]);
+});
 
 
-app.on('window-all-closed', ()=>{
-	if (process.platform != 'darwin')
-		app.quit();
-})
 

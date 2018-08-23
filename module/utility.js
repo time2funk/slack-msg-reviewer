@@ -28,36 +28,50 @@ module.exports = {
 				user: item.user,
 				text: item.text,
 				source: item.source
-			}));
-        // for (let i=0; i < data.messages.length; i++) {
-        //     if(data.messages[i].text.includes(pattern))
-        //         msgs.push(data.messages[i]);
-        // }
+			}))
+			.sort((a,b) => a.ts < b.ts);
 	},
 
 	replaceIds(messages, users){
-
-			// ...
-
-		return messages;
+		return messages
+		.map(item => {
+			for(let i=0; i < users.length; i++){
+				if(users[i].id === item.user){
+					if(users[i].profile && users[i].profile.display_name)
+						item.user = users[i].profile.display_name;
+					else
+						item.user = users[i].name;
+					break;
+				}
+			}
+			item.text = item.text.replace(/<@\w*>/g,"");
+			return item;
+		});
 	},
 
 	customizer(data){
 		return data.map(item => {
 			return {
-				// text: userName 
-				// 	? item.text.replace(`<@${userId}>`, '@userName')
-				// 	: item.text.replace(`<@${userId}>`, ''),
 				text: item.text,
 				from: item.user,
 				time: getTime(item.ts),
-				date: getDate(item.ts)
+				date: getDate(item.ts),
+				source: item.source
 			}
 		});
 	}
 
 }
 
+				// text: userName 
+				// 	? item.text.replace(`<@${userId}>`, '@userName')
+				// 	: item.text.replace(`<@${userId}>`, ''),
+
+
+        // for (let i=0; i < data.messages.length; i++) {
+        //     if(data.messages[i].text.includes(pattern))
+        //         msgs.push(data.messages[i]);
+        // }
                 // const pattern = `<@${user_id}>`;
                 // const msgs = [];
 
