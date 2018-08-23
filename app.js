@@ -31,7 +31,7 @@ app.on('ready', ()=>{
 		})
 	);
 
-	mainWindow.webContents.openDevTools();
+	// mainWindow.webContents.openDevTools();
 
 	mainWindow.on('closed', () => {
 		app.quit();

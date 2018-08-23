@@ -64,7 +64,7 @@
 					<span>Multiparty Direct Messages</span>
 					</label>
 				</p>
-				<input type="submit" class='waves-effect waves-green btn btn-flat' value='Accept'>
+				<button type="submit" class="waves-effect waves-green btn btn-flat">Accept</button>
 			</form>
 		</div>
 	</div>
@@ -91,9 +91,11 @@
 		}).get();
 		console.log(checks);
 
-		$('#source-modal').modal('close');
-		preloader.className = "";
-		ipcRenderer.send('msg-sources', checks);
+		if(checks && checks.length > 0) {
+			$('#source-modal').modal('close');
+			preloader.className = "";
+			ipcRenderer.send('msg-sources', checks);
+		}
 	}
 
 	// receive slack messages
