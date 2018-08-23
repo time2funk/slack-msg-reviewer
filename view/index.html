@@ -2,46 +2,136 @@
 <html>
 <head>
 	<title>Slack Messages</title>
+	<link rel="stylesheet" type="text/css" href="../assets/style/style.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script> -->
 </head>
 <body>
+	<div id="preloader" class='hidden'>
+		<div class="center">
+			<div class="preloader-wrapper big active">
+				<div class="spinner-layer spinner-red-only">
+					<div class="circle-clipper left">
+						<div class="circle"></div>
+					</div>
+					<div class="gap-patch">
+						<div class="circle"></div>
+					</div>
+					<div class="circle-clipper right">
+						<div class="circle"></div>
+					</div>
+				</div>
+			</div>			
+		</div>
+	</div>
+
 	<nav>
 		<div class="nav-wrapper">
 			<a class="brand-logo center">Slack Messages Viewer</a>
 		</div>
 	</nav>		
 
-<ul>
-</ul>
+	<div class="content">
+		<ul>
+		</ul>
+	</div>
 
+	<div id="source-modal" class="modal">
+		<div class="modal-content">
+			<form id='source-modal-form' onsubmit='getSources(event)'>
+				<h4>Select message sources</h4>
+
+				<p>
+					<label>
+					<input type="checkbox" value="channel"/>
+					<span>Public Channels</span>
+					</label>
+				</p>
+				<p>
+					<label>
+					<input type="checkbox" value="group"/>
+					<span>Private Channels</span>
+					</label>
+				</p>
+				<p>
+					<label>
+					<input type="checkbox" value="im"/>
+					<span>Direct Messages</span>
+					</label>
+				</p>
+				<p>
+					<label>
+					<input type="checkbox" value="mpim"/>
+					<span>Multiparty Direct Messages</span>
+					</label>
+				</p>
+				<input type="submit" class='waves-effect waves-green btn btn-flat' value='Accept'>
+			</form>
+		</div>
+	</div>
 
 <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
 <script>if (window.module) module = window.module;</script>
 
 <script>
 	const electron = require('electron');
 	const { ipcRenderer } = electron;
-	const ul = document.querySelector("ul");
-	console.log(ul);
 
+	const preloader = document.getElementById('preloader');
+	const ul = document.querySelector("ul");
+
+	// on submit form function
+	// to target sources
+	function getSources(e){
+		if (e.preventDefault) e.preventDefault();
+
+		const checks = $('form input[type="checkbox"]:checked').map(function(){
+			return $(this).val();
+		}).get();
+		console.log(checks);
+
+		$('#source-modal').modal('close');
+		preloader.className = "";
+		ipcRenderer.send('msg-sources', checks);
+	}
+
+	// receive slack messages
 	ipcRenderer.on("msgs:receive", (e, data) => {
+		preloader.className = "hidden";
 		ul.className = 'collection with-header';
-		console.log('bingo');
 		console.log(data);
+
 		for(let i=0 ; i < data.length; i++){
 			const li = document.createElement("li");
-			li.className = 'collection-item';
-			const itemText = document.createTextNode(data[i].text);
-			li.appendChild(itemText);
+		    li.setAttribute('class', 'collection-item');
+		    li.innerHTML = `
+				<div class="title">
+					<p class='from'>
+						<span class='source'>
+							${data[i].source}:
+						</span>
+						${data[i].from}
+					</p>
+					<p class='when'>${data[i].date} ${data[i].time}</p>
+				</div>
+				<p class='message'>
+					${data[i].text}
+				</p>   
+		    `;
 			ul.appendChild(li);
 		}
-	})
+	});
 
-	$(() => {
+	// on document ready
+	$(() => { 
 		console.log('ready');
-		ipcRenderer.send('app-ready', 'ping')
+
+		// init source modal
+		$('.modal').modal();
+		
+		// show the source modal
+		$('#source-modal').modal('open');
 	});
 </script>
 </body>

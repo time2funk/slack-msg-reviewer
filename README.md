@@ -1,7 +1,7 @@
 # slack-msg-reviewer
-Node.js, Electron.js, slack
+[ Node.js, Electron.js, slack ]
 
-Desktop App (based on Electron.js) to review messages of specific user in slack worck-space.
+Desktop App (based on Electron.js) was design to review messages of specific user in slack worck-space.
 
 // Design: slack-api--> slack-methods--> [data]--> app
 
@@ -10,7 +10,9 @@ Desktop App (based on Electron.js) to review messages of specific user in slack 
 
 // We will receive slack-bot OAuth Access Token (xoxp-...)
 
-.. Select [channels:history, channels:read, users:read] under your Permission OAuth Scopes
+. Select "Permission OAuth Scopes" for your slack-bot 
+
+[channels:history, groups:history, im:history, mpim:history, channels:read, groups:read, im:read, mpim:read, users:read]
 
 . Then we need to rewrite our config.js file in the app directory
 
@@ -19,3 +21,10 @@ npm start
 
 # run tests
 npm test
+
+# deploy
+npm package-mac
+
+npm package-win
+
+npm package-linux

@@ -11,49 +11,64 @@ module.exports = class {
     }
 
     setSources(sources){
-
-        console.log('a');
         this.sources = sources;
     }
 
     // the Magic...
-    // msg getter
     async getMsgs(){
-        console.log('b');
         const mainUserId = await this.getUserId(this.user);
-        const users = await this.slack.users();
+        const users = await this.getUsers();
 
         return new Promise(async (resolve, reject) => {
             let messages = [];
 
             if(this.sources.indexOf('channel') != -1)
                 await this.getChannelIds().then( async ids => {
-                    console.log(ids);
                     let tmp_msgs = [];
 
                     for(let i=0; i < ids.length; i++){
                         await this.getChannelMsgs(ids[i]).then(result => {
-                            console.log(result);
                             tmp_msgs = tmp_msgs.concat(result);
                         });
                     }
                     messages = messages.concat(tmp_msgs);
                 });
 
-            // if(this.sources.indexOf('group') != -1)
-            //     await this.getGroupMsgs().then(result => {
-            //         messages = messages.concat(result);
-            //     });
+            if(this.sources.indexOf('group') != -1)
+                await this.getGroupIds().then( async ids => {
+                    let tmp_msgs = [];
+
+                    for(let i=0; i < ids.length; i++){
+                        await this.getGroupMsgs(ids[i]).then(result => {
+                            tmp_msgs = tmp_msgs.concat(result);
+                        });
+                    }
+                    messages = messages.concat(tmp_msgs);
+                });
             
-            // if(this.sources.indexOf('im') != -1)
-            //     await this.getImMsgs().then(result => {
-            //         messages = messages.concat(result);
-            //     });
+            if(this.sources.indexOf('im') != -1)
+                await this.getImIds().then( async ids => {
+                    let tmp_msgs = [];
+
+                    for(let i=0; i < ids.length; i++){
+                        await this.getImMsgs(ids[i]).then(result => {
+                            tmp_msgs = tmp_msgs.concat(result);
+                        });
+                    }
+                    messages = messages.concat(tmp_msgs);
+                });
             
-            // if(this.sources.indexOf('mpim') != -1)
-            //     await this.getMpimMsgs().then(result => {
-            //         messages = messages.concat(result);
-            //     });
+            if(this.sources.indexOf('mpim') != -1)
+                await this.getMpimIds().then( async ids => {
+                    let tmp_msgs = [];
+
+                    for(let i=0; i < ids.length; i++){
+                        await this.getMpimMsgs(ids[i]).then(result => {
+                            tmp_msgs = tmp_msgs.concat(result);
+                        });
+                    }
+                    messages = messages.concat(tmp_msgs);
+                });
             
             resolve(messages);
         }).then(messages => {
@@ -74,15 +89,34 @@ module.exports = class {
         });
     }
 
+    // GET array of users
+    getUsers(){
+        return new Promise((resolve, reject) => {
+            this.slack.users().then(data => { // get the user list
+                if(data.ok)
+                    resolve(data.members);
+                else 
+                    reject('response [users.list] NOT OK');
+            }).catch(e => {
+                console.log(e);
+                reject(e);
+            });
+        });
+    }
+
+
     // GET userId BY userName
     getUserId(name) {
         return new Promise((resolve, reject) => {
             this.slack.users().then(data => { // get the user list
-                for (let i=0; i < data.members.length; i++) {
-                    if(data.members[i].profile.display_name && data.members[i].profile.display_name === name)
-                        resolve(data.members[i].id);
-                }
-                reject('no matched userName found');
+                if(data.ok) {
+                    for (let i=0; i < data.members.length; i++) {
+                        if(data.members[i].profile.display_name && data.members[i].profile.display_name === name)
+                            resolve(data.members[i].id);
+                    }
+                    reject('no matched userName found');
+                }else
+                    reject('response [users.list] NOT OK');
             }).catch(e => {
                 console.log(e);
                 reject(e);
@@ -94,14 +128,17 @@ module.exports = class {
     getUserName(id){
         return new Promise((resolve, reject) => {
             this.slack.users().then(data => { // get the user list
-                for (let i=0; i < data.members.length; i++) {
-                    if(data.members[i].id === id) // the user
-                        if(data.members[i].profile && data.members[i].profile.display_name)
-                            resolve(data.members[i].profile.display_name);
-                        else
-                            resolve(data.members[i].name);
-                }
-                reject('no matched userId found');
+                if(data.ok) {
+                    for (let i=0; i < data.members.length; i++) {
+                        if(data.members[i].id === id) // the user
+                            if(data.members[i].profile && data.members[i].profile.display_name)
+                                resolve(data.members[i].profile.display_name);
+                            else
+                                resolve(data.members[i].name);
+                    }
+                    reject('no matched userId found');
+                }else
+                    reject('response [users.list] NOT OK');
             }).catch(e => {
                 console.log(e);
                 reject(e);
@@ -138,8 +175,8 @@ module.exports = class {
                 if (data.ok) {
                     const list = [];
 
-                    for (let i=0; i < data.usergroups.length; i++) {
-                        list.push(data.usergroups[i].id);
+                    for (let i=0; i < data.groups.length; i++) {
+                        list.push(data.groups[i].id);
                     }
                     resolve(list);
                 } else 
@@ -199,8 +236,8 @@ module.exports = class {
         return new Promise((resolve, reject) => {
             this.slack.channelHistory(id).then(data => {
                 if(data.ok) {
-                    for(let i=0; i < data.messages; i++){
-                        data.messages.source = "channel";
+                    for(let i=0; i < data.messages.length; i++){
+                        data.messages[i].source = "channel";
                     }
                     resolve(data.messages);
                 }
@@ -219,8 +256,8 @@ module.exports = class {
         return new Promise((resolve, reject) => {
             this.slack.groupHistory(id).then(data => {
                 if(data.ok) {
-                    for(let i=0; i < data.messages; i++){
-                        data.messages.source = "private-channel";
+                    for(let i=0; i < data.messages.length; i++){
+                        data.messages[i].source = "private-channel";
                     }
                     resolve(data.messages);
                 }
@@ -239,8 +276,8 @@ module.exports = class {
         return new Promise((resolve, reject) => {
             this.slack.imHistory(id).then(data => {
                 if(data.ok) {
-                    for(let i=0; i < data.messages; i++){
-                        data.messages.source = "direct-message-channel";
+                    for(let i=0; i < data.messages.length; i++){
+                        data.messages[i].source = "direct-message-channel";
                     }
                     resolve(data.messages);
                 }
@@ -259,8 +296,8 @@ module.exports = class {
         return new Promise((resolve, reject) => {
             this.slack.mpimHistory(id).then(data => {
                 if(data.ok) {
-                    for(let i=0; i < data.messages; i++){
-                        data.messages.source = "multiparty-direct-message-channel";
+                    for(let i=0; i < data.messages.length; i++){
+                        data.messages[i].source = "multiparty-direct-message-channel";
                     }
                     resolve(data.messages);
                 }
