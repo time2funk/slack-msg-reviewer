@@ -1,11 +1,10 @@
 const assert = require('chai').assert;
-//expect, assert, should()
 
 const config = require('../config');
 const slackApi = require('../module/slack-api');
 const slack = new slackApi(config.slack.token);
 
-describe('[Slack API Testing]', function(){
+describe('[Slack API]', function(){
 
 	describe('connection', function(){
 		let result;
@@ -13,7 +12,7 @@ describe('[Slack API Testing]', function(){
 		before(async function() {
 			result = await slack.getSelfData();
 		});
-		it('must return ok:true', async function(){
+		it('must return ok:true', function(){
 			assert.isOk(result.ok);
 		})
 	});
@@ -24,7 +23,7 @@ describe('[Slack API Testing]', function(){
 		before(async function() {
 			result = await slack.users();
 		});
-		it('must return ok:true', async function(){
+		it('must return ok:true', function(){
 			assert.isOk(result.ok);
 		});
 	});
@@ -35,10 +34,10 @@ describe('[Slack API Testing]', function(){
 		before(async function() {
 			result = await slack.channels();
 		});
-		it('must return ok:true', async function(){
+		it('must return ok:true', function(){
 			assert.isOk(result.ok);
 		});
-		it('should be more then 0 channels', async function(){
+		it('should be more then 0 channels', function(){
 			assert.isAtLeast(result.channels.length, 1);
 		});
 	});
@@ -51,30 +50,13 @@ describe('[Slack API Testing]', function(){
 			channels = await slack.channels();
 			history = await slack.channelHistory(channels.channels[0].id);
 		});
-		it('history response must return ok:true', async function(){
+		it('history response must return ok:true', function(){
 			assert.isOk(history.ok);
 		});
-		it('should be more then 0 msgs in channel', async function(){
+		it('should be more then 0 msgs in channel', function(){
 			assert.isAtLeast(history.messages.length, 1);
 		});
 	});
 
 });
-
-
-// before(function() {
-//   // runs before all tests in this block
-// });
-
-// after(function() {
-//   // runs after all tests in this block
-// });
-
-// beforeEach(function() {
-//   // runs before each test in this block
-// });
-
-// afterEach(function() {
-//   // runs after each test in this block
-// });
 

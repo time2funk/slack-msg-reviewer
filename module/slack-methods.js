@@ -3,11 +3,9 @@ const utility = require('./utility');
 const { customizer, filterMessages, replaceIds } = utility;
 
 module.exports = class {
-    constructor(token, user, sources) {
-        this.slack = new SlackAPI(token);
-        this.user = user;
-        if(sources && sources.length > 0) 
-            this.sources = sources;
+    constructor(config) {
+        this.slack = new SlackAPI(config.token);
+        this.user = config.user;
     }
 
     setSources(sources){

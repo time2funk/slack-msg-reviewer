@@ -7,7 +7,7 @@ chai.should();
 chai.use(chaiAsPromised);
 
 
-describe("[App Testing]", function () {
+describe("[Electron]", function () {
 
 	before(function () {
 		chaiAsPromised.transferPromiseness = app.transferPromiseness;

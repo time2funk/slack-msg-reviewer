@@ -64,10 +64,12 @@
 					<span>Multiparty Direct Messages</span>
 					</label>
 				</p>
-				<input type="submit" class='waves-effect waves-green btn btn-flat' value='Accept'>
+				<button type="submit" class="waves-effect waves-green btn btn-flat">Accept</button>
 			</form>
 		</div>
 	</div>
+
+	<audio autobuffer controls></audio>
 
 <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -80,6 +82,7 @@
 
 	const preloader = document.getElementById('preloader');
 	const ul = document.querySelector("ul");
+	const audioElement = document.querySelector('audio');
 
 	// on submit form function
 	// to target sources
@@ -89,11 +92,24 @@
 		const checks = $('form input[type="checkbox"]:checked').map(function(){
 			return $(this).val();
 		}).get();
-		console.log(checks);
 
-		$('#source-modal').modal('close');
-		preloader.className = "";
-		ipcRenderer.send('msg-sources', checks);
+		if(checks && checks.length > 0) {
+			$('#source-modal').modal('close');
+			preloader.className = "";
+			ipcRenderer.send('msg-sources', checks);
+		}
+	}
+
+	// voice player function
+	function PlayTheVoice(obj){
+		const uInt8Array = new Uint8Array(obj.AudioStream);
+		const arrayBuffer = uInt8Array.buffer;
+		const blob = new Blob([arrayBuffer]);
+		const url = URL.createObjectURL(blob);
+
+		audioElement.src = url;
+		audioElement.play();
+		console.log(audioElement);
 	}
 
 	// receive slack messages
@@ -102,25 +118,29 @@
 		ul.className = 'collection with-header';
 		console.log(data);
 
-		for(let i=0 ; i < data.length; i++){
+		const msgs = data.msgs;
+		const voice = data.voice;
+
+		for(let i=0 ; i < msgs.length; i++){
 			const li = document.createElement("li");
 		    li.setAttribute('class', 'collection-item');
 		    li.innerHTML = `
 				<div class="title">
 					<p class='from'>
 						<span class='source'>
-							${data[i].source}:
+							${msgs[i].source}:
 						</span>
-						${data[i].from}
+						${msgs[i].from}
 					</p>
-					<p class='when'>${data[i].date} ${data[i].time}</p>
+					<p class='when'>${msgs[i].date} ${msgs[i].time}</p>
 				</div>
 				<p class='message'>
-					${data[i].text}
-				</p>   
+					${msgs[i].text}
+				</p>
 		    `;
 			ul.appendChild(li);
 		}
+		PlayTheVoice(voice);
 	});
 
 	// on document ready
