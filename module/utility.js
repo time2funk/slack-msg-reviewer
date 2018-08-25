@@ -62,28 +62,3 @@ module.exports = {
 	}
 
 }
-
-				// text: userName 
-				// 	? item.text.replace(`<@${userId}>`, '@userName')
-				// 	: item.text.replace(`<@${userId}>`, ''),
-
-
-        // for (let i=0; i < data.messages.length; i++) {
-        //     if(data.messages[i].text.includes(pattern))
-        //         msgs.push(data.messages[i]);
-        // }
-                // const pattern = `<@${user_id}>`;
-                // const msgs = [];
-
-                // for (let i=0; i < data.messages.length; i++) {
-                //     if(data.messages[i].text.includes(pattern))
-                //         msgs.push(data.messages[i]);
-                // }
-
-                // resolve(data.messages);
-
-
-
-// var _date = new Date(unix_timestamp*1000);
-// var date = `${date.getFullYear()} . ${_date.getMonth()+1} . ${_date.getDate()}`;
-// var time = `${_date.getHours()} : ${_date.getMinutes()} : ${_date.getSeconds()}`;

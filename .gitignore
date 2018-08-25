@@ -1,6 +1,9 @@
 node_modules/
 Crashes/
-config.js
-
 .org.chromium.*/
+
+config.js
 app.test.log
+*.mp3
+package-lock.json
+yarn-lock.json

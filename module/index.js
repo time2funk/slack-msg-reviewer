@@ -1,10 +1,7 @@
-const SlackMethods = require('./slack-methods');
-const utility = require('./utility');
-const { customizer, filterMessages, replaceIds } = utility;
+const slackMethods = require('./slack-methods');
+const polly = require('./polly');
 
 module.exports = {
-	SlackMethods: SlackMethods,
-	customizer: customizer,
-	filterMessages: filterMessages, 
-	replaceIds: replaceIds
+	SlackMethods: slackMethods,
+	Polly: polly,
 }
