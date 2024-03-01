@@ -40,3 +40,4 @@ Create your oun "config.js" file from "comfig-sample.js"
 // we will receive "Access Key ID" and "Secret Access Key" ===> config.js
 
 . Also we need to choose the "voice ID" form the list https://docs.aws.amazon.com/polly/latest/dg/voicelist.html ===> config.js
+
